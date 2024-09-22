@@ -1,0 +1,142 @@
+@import "https://unpkg.com/open-props" layer(support.design-system);
+@import "https://unpkg.com/open-props/normalize.min.css" layer(support.demo);
+@import "https://unpkg.com/open-props/buttons.min.css" layer(support.demo);
+
+@keyframes promote {
+  0%, 100% {
+    opacity: .5;
+    transform: scale(.25);
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+scrolly-ruler {
+  container: --scrolly-ruler / inline-size;
+  width: clamp(90vw, 50vw, 12in);
+  height: 1in;
+
+  background: var(--surface-2);
+  border-radius: var(--radius-3);
+  box-shadow: var(--shadow-6);
+
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
+  overflow: clip;
+  counter-set: --inches;
+
+  @media (prefers-color-scheme: light) {
+    background: white;
+  }
+
+  & > ruler-indicator {
+    content: "";
+    place-self: center;
+    height: .2in;
+    width: .2in;
+    border-radius: var(--radius-1);
+    background: var(--surface-4);
+    place-self: start center;
+    transform-origin: center;
+    transform: translateX(-50%) rotateZ(.125turn) translateY(-75%);
+    transition: background-color .3s ease;
+
+    &.has-target {
+      background: var(--link);
+    }
+  }
+
+  > ruler-grid {
+    display: grid;
+    grid-auto-flow: column;
+    place-items: end;
+    gap: calc(1in / 5);
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-behavior: smooth;
+    touch-action: pan-x;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+
+    &:focus {
+      outline: none;
+    }
+
+    &::before, &::after {
+      content: "";
+      display: inline-block;
+      width: 80cqi;
+    }
+
+    & > * {
+      background: var(--gray-4);
+      inline-size: 1px;
+      scroll-snap-align: center;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+    }
+
+    & > div {
+      background: var(--gray-5);
+      inline-size: 2px;
+      block-size: .25in;
+
+      view-timeline-name: --inch-timeline;
+      view-timeline-axis: x;
+      
+      &:not(:first-of-type) {
+        counter-increment: --inches;
+      }
+
+      &::before {
+        display: inline-block;
+        content: counter(--inches);
+        position: relative;
+        top: 0;
+        left: 0;
+        translate: -50% -1lh;
+        transform-origin: bottom center;
+
+        color: var(--text-2);
+        font-size: var(--font-size-5);
+        font-weight: 200;
+        text-align: center;
+
+        animation: promote var(--ease-in-out-1) both;
+        animation-timeline: --inch-timeline;
+        animation-range: cover, cover 30% cover 70%;
+      }
+    }
+
+    & > span {
+      block-size: .1in;
+      transition: 
+        background-color .3s ease,
+        block-size .3s ease;
+
+      &:nth-of-type(3n - 1) {
+        block-size: .15in;
+      }
+
+      &.has-target {
+        block-size: .5in;
+        background: var(--link);
+      }
+    }
+  }
+}
+
+@layer support.demo {
+  body {
+    display: grid;
+    place-content: center;
+    place-items: center;
+    padding: var(--size-5);
+    gap: var(--size-5);
+  } 
+}
